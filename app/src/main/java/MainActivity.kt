@@ -1,3 +1,4 @@
+package com.example.mynewcity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import org.osmdroid.config.Configuration
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         val controller = map.controller
         controller.setZoom(15.0)
-
+        print("Test")
         val startPoint = GeoPoint(52.5200, 13.4050) // Berlin
         controller.setCenter(startPoint)
     }

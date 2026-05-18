@@ -57,4 +57,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("org.osmdroid:osmdroid-android:6.1.20")
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }

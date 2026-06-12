@@ -4,13 +4,28 @@ import androidx.appcompat.app.AppCompatActivity
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+// Import für Logging
+import android.util.Log
+// Import für FakeGPS
+import com.example.mynewcity.location.FakeLocationSource
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var map: MapView
+    private lateinit var fakeLocationSource: FakeLocationSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Ab hier Fake-GPS einbindung
+        fakeLocationSource = FakeLocationSource()
 
+        fakeLocationSource.start { location ->
+
+            Log.d(
+                "FakeGPS",
+                "${location.latitude}, ${location.longitude}"
+            )
+        }
+        //
         super.onCreate(savedInstanceState)
 
         Configuration.getInstance().load(

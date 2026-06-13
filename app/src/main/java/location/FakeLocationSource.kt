@@ -7,27 +7,35 @@ class FakeLocationSource : LocationSource {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private var index = 0
-
     private lateinit var callback: (LocationData) -> Unit
 
-    // Fake GPS in Berlin
-    private val route = listOf(
-        LocationData(52.5200, 13.4050),
-        LocationData(52.5201, 13.4052),
-        LocationData(52.5202, 13.4054),
-        LocationData(52.5203, 13.4056),
-        LocationData(52.5204, 13.4058)
-    )
+    // Startpunkt (Berlin)
+    private val startLat = 52.5200
+    private val startLon = 13.4050
+
+    // aktuelle „Grid-Position“
+    private var gridX = 0
+    private var gridY = 0
+
+    // Schrittgröße in GRID Zellen (nicht Meter!)
+    private val step = 1
+
+    // Umrechnung: eine Zelle in Grad (muss zu deinem Grid passen!)
+    private val cellSize = 0.0001
 
     private val runnable = object : Runnable {
         override fun run() {
 
-            callback(route[index])
+            // 👉 Bewegung im Grid
+            gridX += step
+            gridY += step
 
-            index = (index + 1) % route.size
+            val lat = startLat + (gridY * cellSize)
+            val lon = startLon + (gridX * cellSize)
 
-            handler.postDelayed(this, 2000) // alle 2 Sekunden
+            callback(LocationData(lat, lon))
+
+            handler.postDelayed(this, 2000)
         }
     }
 

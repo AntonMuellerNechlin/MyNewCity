@@ -11,6 +11,7 @@ class FakeLocationSource : LocationSource {
 
     private lateinit var callback: (LocationData) -> Unit
 
+    // Fake GPS in Berlin
     private val route = listOf(
         LocationData(52.5200, 13.4050),
         LocationData(52.5201, 13.4052),

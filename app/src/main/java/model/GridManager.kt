@@ -4,12 +4,17 @@ class GridManager {
 
     private val visitedCells = mutableSetOf<GridCell>()
 
-    fun addPosition(lat: Double, lon: Double): GridCell {
+    fun toGridCell(lat: Double, lon: Double): GridCell {
 
-        val x = (lon * 1000).toInt()
-        val y = (lat * 1000).toInt()
+        val x = (lon * 10000).toInt()
+        val y = (lat * 10000).toInt()
 
-        val cell = GridCell(x, y)
+        return GridCell(x, y)
+    }
+
+    fun addLocation(lat: Double, lon: Double): GridCell {
+
+        val cell = toGridCell(lat, lon)
 
         visitedCells.add(cell)
 

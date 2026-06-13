@@ -8,18 +8,23 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 // Import für Logging
 import android.util.Log
-// Import für FakeGPS
+// Import für Location
 import com.example.mynewcity.location.FakeLocationSource
+// Import für Model
+import com.example.mynewcity.model.GridManager
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var map: MapView
     private lateinit var fakeLocationSource: FakeLocationSource
+    private lateinit var gridManager: GridManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
+        gridManager = GridManager()
 
         Configuration.getInstance().userAgentValue = packageName
 
@@ -44,8 +49,19 @@ class MainActivity : AppCompatActivity() {
 
             Log.d("FakeGPS", "${location.latitude}, ${location.longitude}")
 
+            val cell = gridManager.addLocation(
+                location.latitude,
+                location.longitude
+            )
+
+            Log.d("GRID", "cell=${cell.x}, ${cell.y}")
+
             runOnUiThread {
-                addMarker(location.latitude, location.longitude)
+
+                addMarker(
+                    cell.y / 10000.0,
+                    cell.x / 10000.0
+                )
             }
         }
     }

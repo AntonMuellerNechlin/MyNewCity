@@ -58,10 +58,7 @@ class MainActivity : AppCompatActivity() {
 
             runOnUiThread {
 
-                addMarker(
-                    cell.y / 10000.0,
-                    cell.x / 10000.0
-                )
+                // UI wird später über Grid Overlay gemacht
             }
         }
     }

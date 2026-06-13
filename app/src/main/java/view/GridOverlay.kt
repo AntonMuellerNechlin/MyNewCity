@@ -2,47 +2,63 @@ package com.example.mynewcity.view
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
+import com.example.mynewcity.model.GridCell
+import com.example.mynewcity.model.GridConfig
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polygon
-import com.example.mynewcity.model.GridCell
+
 
 class GridOverlay(private val map: MapView) {
 
-    fun drawCells(cells: Set<GridCell>) {
+    private val visited = mutableSetOf<GridCell>()
 
-        for (cell in cells) {
+    fun setVisited(cells: Set<GridCell>) {
+        visited.clear()
+        visited.addAll(cells)
+    }
 
-            val lat = cell.y / 10000.0
-            val lon = cell.x / 10000.0
+    fun drawGrid(allCells: Set<GridCell>) {
 
-            // Größe einer Grid-Zelle
-            val size = 0.00005
+        map.overlays.removeIf { it is Polygon }
+
+        val origin = GridConfig.ORIGIN
+
+        val metersPerDegLat = 111320.0
+        val lat0 = origin.latitude
+
+        val metersPerDegLon0 = 111320.0 * kotlin.math.cos(Math.toRadians(lat0))
+
+        for (cell in allCells) {
+
+            val xMeters = cell.x * GridConfig.CELL_SIZE_METERS
+            val yMeters = cell.y * GridConfig.CELL_SIZE_METERS
+
+            val lat = origin.latitude + (yMeters / metersPerDegLat)
+            val lon = origin.longitude + (xMeters / metersPerDegLon0)
+
+            val sizeLat = GridConfig.CELL_SIZE_METERS / metersPerDegLat
+            val sizeLon = GridConfig.CELL_SIZE_METERS / metersPerDegLon0
 
             val polygon = Polygon(map)
 
-            val points = listOf(
+            polygon.points = listOf(
                 GeoPoint(lat, lon),
-                GeoPoint(lat + size, lon),
-                GeoPoint(lat + size, lon + size),
-                GeoPoint(lat, lon + size)
+                GeoPoint(lat + sizeLat, lon),
+                GeoPoint(lat + sizeLat, lon + sizeLon),
+                GeoPoint(lat, lon + sizeLon)
             )
 
-            polygon.points = points
+            val isVisited = visited.contains(cell)
 
-            val fillPaint = Paint().apply {
-                style = Paint.Style.FILL
-                color = Color.argb(80, 0, 150, 255)
-            }
+            polygon.fillPaint.color = if (isVisited)
+                android.graphics.Color.argb(120, 0, 150, 255)
+            else
+                android.graphics.Color.argb(20, 0, 0, 0)
 
-            val strokePaint = Paint().apply {
-                style = Paint.Style.STROKE
-                color = Color.BLUE
-                strokeWidth = 2f
-            }
-
-            polygon.fillPaint.set(fillPaint)
-            polygon.outlinePaint.set(strokePaint)
+            polygon.fillPaint.style = android.graphics.Paint.Style.FILL
+            polygon.outlinePaint.strokeWidth = 1f
 
             map.overlays.add(polygon)
         }

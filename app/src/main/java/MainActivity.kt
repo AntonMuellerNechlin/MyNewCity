@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         val startPoint = GeoPoint(52.5200, 13.4050)
         controller.setCenter(startPoint)
+        controller.setZoom(18.0)
 
         // 2. Fake GPS initialisieren
         fakeLocationSource = FakeLocationSource()
@@ -62,7 +63,16 @@ class MainActivity : AppCompatActivity() {
 
             runOnUiThread {
 
-                gridOverlay.drawCells(gridManager.getVisitedCells())
+                val visited = gridManager.getVisitedCells()
+
+                gridOverlay.setVisited(visited)
+
+                val grid = gridManager.generateGrid(
+                    52.5200,
+                    13.4050
+                )
+
+                gridOverlay.drawGrid(grid)
             }
         }
     }

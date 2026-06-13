@@ -11,9 +11,6 @@ class GridOverlay(private val map: MapView) {
 
     fun drawCells(cells: Set<GridCell>) {
 
-        // erstmal clearen am Anfang (später ersetzen)
-        map.overlays.clear()
-
         for (cell in cells) {
 
             val lat = cell.y / 10000.0

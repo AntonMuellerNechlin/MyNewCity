@@ -12,6 +12,8 @@ import android.util.Log
 import com.example.mynewcity.location.FakeLocationSource
 // Import für Model
 import com.example.mynewcity.model.GridManager
+// Import für View
+import com.example.mynewcity.view.GridOverlay
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var map: MapView
     private lateinit var fakeLocationSource: FakeLocationSource
     private lateinit var gridManager: GridManager
+    private lateinit var gridOverlay: GridOverlay
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -32,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         // 1. Map zuerst
         map = findViewById(R.id.map)
+        gridOverlay = GridOverlay(map)
 
         map.setMultiTouchControls(true)
 
@@ -58,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
             runOnUiThread {
 
-                // UI wird später über Grid Overlay gemacht
+                gridOverlay.drawCells(gridManager.getVisitedCells())
             }
         }
     }

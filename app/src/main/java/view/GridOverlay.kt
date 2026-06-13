@@ -44,8 +44,8 @@ class GridOverlay(private val map: MapView) {
                 strokeWidth = 2f
             }
 
-            polygon.fillPaint = fillPaint
-            polygon.outlinePaint = strokePaint
+            polygon.fillPaint.set(fillPaint)
+            polygon.outlinePaint.set(strokePaint)
 
             map.overlays.add(polygon)
         }

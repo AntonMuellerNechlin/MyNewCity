@@ -19,6 +19,7 @@ import com.example.mynewcity.view.GridOverlay
 class MainActivity : AppCompatActivity() {
 
     private lateinit var map: MapView
+
     private lateinit var fakeLocationSource: FakeLocationSource
     private lateinit var gridManager: GridManager
     private lateinit var gridOverlay: GridOverlay

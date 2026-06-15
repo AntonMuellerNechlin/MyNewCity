@@ -1,1 +1,54 @@
-/build
+# =========================
+# Gradle
+# =========================
+.gradle/
+**/.gradle/
+
+build/
+**/build/
+
+# Gradle Wrapper logs / caches
+gradle-app.setting
+.gradle-cache/
+
+# =========================
+# Android Studio / IntelliJ
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# =========================
+# Local configuration
+# =========================
+local.properties
+
+# =========================
+# OS stuff
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Kotlin / Java build artifacts
+# =========================
+*.class
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Android
+# =========================
+captures/
+.externalNativeBuild/
+.cxx/
+
+# =========================
+# Keystore (niemals committen!)
+# =========================
+*.jks
+*.keystore

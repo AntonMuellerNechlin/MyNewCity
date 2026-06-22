@@ -3,7 +3,7 @@ package com.example.mynewcity.location
 import android.os.Handler
 import android.os.Looper
 
-class FakeLocationSource : LocationSource {
+class FakeLocationSource : LocationProvider {
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -17,10 +17,10 @@ class FakeLocationSource : LocationSource {
     private var gridX = 0
     private var gridY = 0
 
-    // Schrittgröße in GRID Zellen (nicht Meter!)
+    // Schrittgröße in GRID Zellen
     private val step = 1
 
-    // Umrechnung: eine Zelle in Grad (muss zu deinem Grid passen!)
+    // künstliche Schrittgröße für die Fake-GPS-Bewegung
     private val cellSize = 0.0001
 
     private val runnable = object : Runnable {

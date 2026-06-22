@@ -59,7 +59,7 @@ class GridOverlay(private val map: MapView) {
 
             polygon.outlinePaint.color = Color.GRAY
             polygon.outlinePaint.style = Paint.Style.STROKE
-            polygon.outlinePaint.strokeWidth = 1f
+            polygon.outlinePaint.strokeWidth = 5f
 
             map.overlays.add(polygon)
         }

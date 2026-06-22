@@ -1,26 +1,22 @@
 package com.example.mynewcity
+
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-// Import für OpenStreetMap
+import com.example.mynewcity.location.FakeLocationSource
+import com.example.mynewcity.location.LocationProvider
+import com.example.mynewcity.model.GridConfig
+import com.example.mynewcity.model.GridManager
+import com.example.mynewcity.view.GridOverlay
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
-// Import für Logging
-import android.util.Log
-// Import für Location
-import com.example.mynewcity.location.FakeLocationSource
-// Import für Model
-import com.example.mynewcity.model.GridManager
-// Import für View
-import com.example.mynewcity.view.GridOverlay
-
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var map: MapView
 
-    private lateinit var fakeLocationSource: FakeLocationSource
+    private lateinit var locationProvider: LocationProvider
     private lateinit var gridManager: GridManager
     private lateinit var gridOverlay: GridOverlay
 
@@ -34,33 +30,44 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        // 1. Map zuerst
         map = findViewById(R.id.map)
         gridOverlay = GridOverlay(map)
 
         map.setMultiTouchControls(true)
 
         val controller = map.controller
-        controller.setZoom(15.0)
-
-        val startPoint = GeoPoint(52.5200, 13.4050)
-        controller.setCenter(startPoint)
         controller.setZoom(18.0)
 
-        // 2. Fake GPS initialisieren
-        fakeLocationSource = FakeLocationSource()
+        val startPoint = GeoPoint(
+            GridConfig.ORIGIN_LAT,
+            GridConfig.ORIGIN_LON
+        )
 
-        // 3. GPS Start
-        fakeLocationSource.start { location ->
+        controller.setCenter(startPoint)
 
-            Log.d("FakeGPS", "${location.latitude}, ${location.longitude}")
+        locationProvider = FakeLocationSource()
+
+        locationProvider.start { location ->
+
+            Log.d(
+                "MYNEWCITY_TEST",
+                "FakeGPS: ${location.latitude}, ${location.longitude}"
+            )
 
             val cell = gridManager.addLocation(
                 location.latitude,
                 location.longitude
             )
 
-            Log.d("GRID", "cell=${cell.x}, ${cell.y}")
+            Log.d(
+                "MYNEWCITY_TEST",
+                "GRID: cell=${cell.x}, ${cell.y}"
+            )
+
+            Log.d(
+                "MYNEWCITY_TEST",
+                "Visited cells: ${gridManager.getVisitedCells().size}"
+            )
 
             runOnUiThread {
 
@@ -69,26 +76,13 @@ class MainActivity : AppCompatActivity() {
                 gridOverlay.setVisited(visited)
 
                 val grid = gridManager.generateGrid(
-                    52.5200,
-                    13.4050
+                    GridConfig.ORIGIN_LAT,
+                    GridConfig.ORIGIN_LON
                 )
 
                 gridOverlay.drawGrid(grid)
             }
         }
-    }
-
-    private fun addMarker(lat: Double, lon: Double) {
-
-        val point = GeoPoint(lat, lon)
-
-        val marker = Marker(map)
-        marker.position = point
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker.title = "Visited"
-
-        map.overlays.add(marker)
-        map.invalidate()
     }
 
     override fun onResume() {
@@ -99,5 +93,10 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         map.onPause()
+    }
+
+    override fun onDestroy() {
+        locationProvider.stop()
+        super.onDestroy()
     }
 }

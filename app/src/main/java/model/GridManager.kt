@@ -1,6 +1,6 @@
 package com.example.mynewcity.model
 
-class GridManager {
+class GridManager : GridUpdateProvider, GridDataProvider {
 
     private val visitedCells = mutableSetOf<GridCell>()
 
@@ -18,17 +18,21 @@ class GridManager {
         return GridCell(x, y)
     }
 
-    fun addLocation(lat: Double, lon: Double): GridCell {
+    override fun addLocation(lat: Double, lon: Double): GridCell {
         val cell = toGridCell(lat, lon)
         visitedCells.add(cell)
         return cell
     }
 
-    fun getVisitedCells(): Set<GridCell> {
+    override fun getVisitedCells(): Set<GridCell> {
         return visitedCells
     }
 
-    fun generateGrid(centerLat: Double, centerLon: Double, radius: Int = 20): Set<GridCell> {
+    override fun generateGrid(
+        centerLat: Double,
+        centerLon: Double,
+        radius: Int
+    ): Set<GridCell> {
 
         val center = toGridCell(centerLat, centerLon)
 

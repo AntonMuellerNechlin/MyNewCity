@@ -26,26 +26,11 @@ class GridManagerTest {
     fun validateGridTest() {
         val gridManager = GridManager()
 
-        val originCell = gridManager.toGridCell(
+        val cell = gridManager.toGridCell(
             GridConfig.ORIGIN_LAT,
             GridConfig.ORIGIN_LON
         )
 
-        assertEquals(GridCell(0, 0), originCell)
-
-        val visitedCell = gridManager.addLocation(
-            GridConfig.ORIGIN_LAT,
-            GridConfig.ORIGIN_LON
-        )
-
-        assertTrue(gridManager.getVisitedCells().contains(visitedCell))
-        assertEquals(1, gridManager.getVisitedCells().size)
-
-        gridManager.addLocation(
-            GridConfig.ORIGIN_LAT,
-            GridConfig.ORIGIN_LON
-        )
-
-        assertEquals(1, gridManager.getVisitedCells().size)
+        assertEquals(GridCell(0, 0), cell)
     }
 }

@@ -17,10 +17,10 @@ class FakeLocationSource : LocationProvider {
     private var gridX = 0
     private var gridY = 0
 
-    // Schrittgröße in GRID Zellen
+    // Schrittgröße in Grid Zellen
     private val step = 1
 
-    // künstliche Schrittgröße für die Fake-GPS-Bewegung
+    // künstliche Schrittgröße für Fake-GPS-Bewegung
     private val cellSize = 0.0001
 
     private val runnable = object : Runnable {

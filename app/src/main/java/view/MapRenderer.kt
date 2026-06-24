@@ -8,9 +8,9 @@ import org.osmdroid.views.MapView
 class MapRenderer(
     private val map: MapView,
     private val gridOverlay: GridOverlay
-) {
+) : MapViewProvider {
 
-    fun setupMap() {
+    override fun setupMap() {
         map.setMultiTouchControls(true)
 
         val startPoint = GeoPoint(
@@ -30,11 +30,11 @@ class MapRenderer(
         gridOverlay.drawGrid(allCells)
     }
 
-    fun resume() {
+    override fun resume() {
         map.onResume()
     }
 
-    fun pause() {
+    override fun pause() {
         map.onPause()
     }
 }

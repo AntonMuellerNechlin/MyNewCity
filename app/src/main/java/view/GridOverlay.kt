@@ -8,16 +8,16 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polygon
 
-class GridOverlay(private val map: MapView) {
+class GridOverlay(private val map: MapView) : GridVisualizationProvider {
 
     private val visited = mutableSetOf<GridCell>()
 
-    fun setVisited(cells: Set<GridCell>) {
+    override fun setVisited(visitedCells: Set<GridCell>) {
         visited.clear()
-        visited.addAll(cells)
+        visited.addAll(visitedCells)
     }
 
-    fun drawGrid(allCells: Set<GridCell>) {
+    override fun drawGrid(allCells: Set<GridCell>) {
 
         map.overlays.removeIf { it is Polygon }
 

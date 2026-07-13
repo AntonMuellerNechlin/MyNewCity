@@ -5,15 +5,19 @@ import com.example.mynewcity.location.LocationProvider
 import com.example.mynewcity.model.GridConfig
 import com.example.mynewcity.model.GridManager
 import com.example.mynewcity.view.MapRenderer
+import com.example.mynewcity.view.UIUpdateProvider
 
 class MainController(
     private val locationProvider: LocationProvider,
     private val gridManager: GridManager,
     private val mapRenderer: MapRenderer,
+    private val uiUpdateProvider: UIUpdateProvider,
     private val executeOnUiThread: (() -> Unit) -> Unit
 ) {
 
     fun startTracking() {
+        uiUpdateProvider.updateTrackingState(true)
+
         locationProvider.start { location ->
 
             Log.d(
@@ -43,17 +47,22 @@ class MainController(
                 GridConfig.ORIGIN_LON
             )
 
+            val progressPercent = (visitedCells.size * 100) / allCells.size
+
             executeOnUiThread {
                 mapRenderer.renderGrid(
                     allCells,
                     visitedCells
                 )
+                uiUpdateProvider.updateVisitedCells(visitedCells.size)
+                uiUpdateProvider.updateProgress(progressPercent)
             }
         }
     }
 
     fun stopTracking() {
         locationProvider.stop()
+        uiUpdateProvider.updateTrackingState(false)
     }
 
     fun resetTracking() {
@@ -69,6 +78,8 @@ class MainController(
                 allCells,
                 gridManager.getVisitedCells()
             )
+            uiUpdateProvider.updateVisitedCells(0)
+            uiUpdateProvider.updateProgress(0)
         }
     }
 

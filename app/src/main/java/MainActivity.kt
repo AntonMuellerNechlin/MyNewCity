@@ -7,6 +7,7 @@ import com.example.mynewcity.location.FakeLocationSource
 import com.example.mynewcity.model.GridManager
 import com.example.mynewcity.view.GridOverlay
 import com.example.mynewcity.view.MapRenderer
+import com.example.mynewcity.view.UIManager
 import org.osmdroid.config.Configuration
 import org.osmdroid.views.MapView
 
@@ -35,16 +36,26 @@ class MainActivity : AppCompatActivity() {
 
         mapRenderer.setupMap()
 
+        val uiManager = UIManager(
+            buttonToggle = findViewById(R.id.buttonToggle),
+            buttonReset = findViewById(R.id.buttonReset),
+            buttonCenter = findViewById(R.id.buttonCenter),
+            textProgress = findViewById(R.id.textProgress),
+            onStartClicked = { mainController.startTracking() },
+            onStopClicked = { mainController.stopTracking() },
+            onResetClicked = { mainController.resetTracking() },
+            onCenterClicked = { mainController.centerMap() }
+        )
+
         mainController = MainController(
             locationProvider = FakeLocationSource(),
             gridManager = GridManager(),
             mapRenderer = mapRenderer,
+            uiUpdateProvider = uiManager,
             executeOnUiThread = { action ->
                 runOnUiThread(action)
             }
         )
-
-        mainController.startTracking()
     }
 
     override fun onResume() {

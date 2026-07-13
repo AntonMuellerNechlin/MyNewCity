@@ -55,4 +55,26 @@ class MainController(
     fun stopTracking() {
         locationProvider.stop()
     }
+
+    fun resetTracking() {
+        gridManager.reset()
+
+        val allCells = gridManager.generateGrid(
+            GridConfig.ORIGIN_LAT,
+            GridConfig.ORIGIN_LON
+        )
+
+        executeOnUiThread {
+            mapRenderer.renderGrid(
+                allCells,
+                gridManager.getVisitedCells()
+            )
+        }
+    }
+
+    fun centerMap() {
+        executeOnUiThread {
+            mapRenderer.centerMap()
+        }
+    }
 }

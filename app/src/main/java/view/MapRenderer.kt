@@ -12,13 +12,16 @@ class MapRenderer(
 
     override fun setupMap() {
         map.setMultiTouchControls(true)
+        map.controller.setZoom(18.0)
+        centerMap()
+    }
 
+    fun centerMap() {
         val startPoint = GeoPoint(
             GridConfig.ORIGIN_LAT,
             GridConfig.ORIGIN_LON
         )
 
-        map.controller.setZoom(18.0)
         map.controller.setCenter(startPoint)
     }
 

@@ -28,6 +28,10 @@ class GridManager : GridUpdateProvider, GridDataProvider {
         return visitedCells
     }
 
+    fun reset() {
+        visitedCells.clear()
+    }
+
     override fun generateGrid(
         centerLat: Double,
         centerLon: Double,

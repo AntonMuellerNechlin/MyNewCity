@@ -9,9 +9,9 @@ class FakeLocationSource : LocationProvider {
 
     private lateinit var callback: (LocationData) -> Unit
 
-    // Startpunkt (Berlin)
-    private val startLat = 52.5200
-    private val startLon = 13.4050
+    // Startpunkt, per Default Berlin, überschreibbar via setStartPosition()
+    private var startLat = 52.5200
+    private var startLon = 13.4050
 
     // aktuelle „Grid-Position“
     private var gridX = 0
@@ -37,6 +37,13 @@ class FakeLocationSource : LocationProvider {
 
             handler.postDelayed(this, 2000)
         }
+    }
+
+    override fun setStartPosition(lat: Double, lon: Double) {
+        startLat = lat
+        startLon = lon
+        gridX = 0
+        gridY = 0
     }
 
     override fun start(onLocationUpdate: (LocationData) -> Unit) {

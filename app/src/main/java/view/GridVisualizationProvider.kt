@@ -4,7 +4,12 @@ import com.example.mynewcity.model.GridCell
 
 interface GridVisualizationProvider {
 
-    fun setVisited(visitedCells: Set<GridCell>)
+    // legt fest, welcher Bereich (in Zellen) überhaupt zum Raster gehört
+    fun initializeGrid(allCells: Set<GridCell>)
 
-    fun drawGrid(allCells: Set<GridCell>)
+    // aktualisiert, welche Zellen besucht sind (nur eine Referenz, kein Neuaufbau)
+    fun updateVisited(visitedCells: Set<GridCell>)
+
+    // entfernt das Raster komplett (z.B. bei Reset)
+    fun clearGrid()
 }

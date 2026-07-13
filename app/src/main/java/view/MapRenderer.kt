@@ -7,7 +7,8 @@ import org.osmdroid.views.MapView
 
 class MapRenderer(
     private val map: MapView,
-    private val gridOverlay: GridOverlay
+    private val gridOverlay: GridOverlay,
+    private val locationOverlay: LocationOverlay
 ) : MapViewProvider {
 
     override fun setupMap() {
@@ -17,20 +18,36 @@ class MapRenderer(
     }
 
     fun centerMap() {
-        val startPoint = GeoPoint(
-            GridConfig.ORIGIN_LAT,
-            GridConfig.ORIGIN_LON
-        )
-
-        map.controller.setCenter(startPoint)
+        centerOn(GridConfig.ORIGIN_LAT, GridConfig.ORIGIN_LON)
     }
 
-    fun renderGrid(
-        allCells: Set<GridCell>,
-        visitedCells: Set<GridCell>
-    ) {
-        gridOverlay.setVisited(visitedCells)
-        gridOverlay.drawGrid(allCells)
+    fun centerOn(lat: Double, lon: Double) {
+        map.controller.setCenter(GeoPoint(lat, lon))
+    }
+
+    fun getMapCenter(): Pair<Double, Double> {
+        val center = map.mapCenter
+        return center.latitude to center.longitude
+    }
+
+    fun initializeGrid(allCells: Set<GridCell>) {
+        gridOverlay.initializeGrid(allCells)
+    }
+
+    fun updateVisited(visitedCells: Set<GridCell>) {
+        gridOverlay.updateVisited(visitedCells)
+    }
+
+    fun clearGrid() {
+        gridOverlay.clearGrid()
+    }
+
+    fun updateLocationMarker(lat: Double, lon: Double) {
+        locationOverlay.updateLocation(lat, lon)
+    }
+
+    fun clearLocationMarker() {
+        locationOverlay.clearLocation()
     }
 
     override fun resume() {

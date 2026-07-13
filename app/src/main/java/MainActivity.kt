@@ -6,6 +6,7 @@ import com.example.mynewcity.controller.MainController
 import com.example.mynewcity.location.FakeLocationSource
 import com.example.mynewcity.model.GridManager
 import com.example.mynewcity.view.GridOverlay
+import com.example.mynewcity.view.LocationOverlay
 import com.example.mynewcity.view.MapRenderer
 import com.example.mynewcity.view.UIManager
 import org.osmdroid.config.Configuration
@@ -28,10 +29,12 @@ class MainActivity : AppCompatActivity() {
         map = findViewById(R.id.map)
 
         val gridOverlay = GridOverlay(map)
+        val locationOverlay = LocationOverlay(map)
 
         mapRenderer = MapRenderer(
             map,
-            gridOverlay
+            gridOverlay,
+            locationOverlay
         )
 
         mapRenderer.setupMap()
@@ -40,11 +43,17 @@ class MainActivity : AppCompatActivity() {
             buttonToggle = findViewById(R.id.buttonToggle),
             buttonReset = findViewById(R.id.buttonReset),
             buttonCenter = findViewById(R.id.buttonCenter),
+            progressContainer = findViewById(R.id.progressContainer),
+            progressBar = findViewById(R.id.progressBar),
             textProgress = findViewById(R.id.textProgress),
             onStartClicked = { mainController.startTracking() },
             onStopClicked = { mainController.stopTracking() },
             onResetClicked = { mainController.resetTracking() },
-            onCenterClicked = { mainController.centerMap() }
+            onCenterClicked = { mainController.centerMap() },
+            onRadiusConfirmed = { radiusKm ->
+                mainController.setRadius(radiusKm)
+                mainController.startTracking()
+            }
         )
 
         mainController = MainController(

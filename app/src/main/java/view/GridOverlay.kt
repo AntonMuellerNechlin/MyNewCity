@@ -1,71 +1,124 @@
 package com.example.mynewcity.view
 
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import com.example.mynewcity.model.GridCell
 import com.example.mynewcity.model.GridConfig
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Polygon
+import org.osmdroid.views.overlay.Overlay
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
-class GridOverlay(private val map: MapView) : GridVisualizationProvider {
+// Zeichnet das Raster direkt auf die Canvas, statt ein Polygon-Objekt pro
+// Zelle zu verwalten. So werden bei jedem Zeichnen nur die Zellen berechnet,
+// die im aktuellen Kartenausschnitt überhaupt sichtbar sind - unabhängig
+// davon, wie groß der insgesamt eingestellte Umkreis ist.
+class GridOverlay(private val map: MapView) : Overlay(), GridVisualizationProvider {
 
-    private val visited = mutableSetOf<GridCell>()
+    private var visitedCells: Set<GridCell> = emptySet()
+    private var hasGrid = false
 
-    override fun setVisited(visitedCells: Set<GridCell>) {
-        visited.clear()
-        visited.addAll(visitedCells)
+    private var minX = 0
+    private var maxX = 0
+    private var minY = 0
+    private var maxY = 0
+
+    private val visitedPaint = Paint().apply {
+        color = Color.argb(120, 0, 150, 255)
+        style = Paint.Style.FILL
     }
 
-    override fun drawGrid(allCells: Set<GridCell>) {
+    private val unvisitedPaint = Paint().apply {
+        color = Color.argb(20, 0, 0, 0)
+        style = Paint.Style.FILL
+    }
 
-        map.overlays.removeIf { it is Polygon }
+    private val outlinePaint = Paint().apply {
+        color = Color.GRAY
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
+    }
+
+    init {
+        map.overlays.add(this)
+    }
+
+    override fun initializeGrid(allCells: Set<GridCell>) {
+        minX = allCells.minOf { it.x }
+        maxX = allCells.maxOf { it.x }
+        minY = allCells.minOf { it.y }
+        maxY = allCells.maxOf { it.y }
+        visitedCells = emptySet()
+        hasGrid = true
+        map.postInvalidate()
+    }
+
+    override fun updateVisited(visitedCells: Set<GridCell>) {
+        this.visitedCells = visitedCells
+        map.postInvalidate()
+    }
+
+    override fun clearGrid() {
+        hasGrid = false
+        visitedCells = emptySet()
+        map.postInvalidate()
+    }
+
+    override fun draw(canvas: Canvas, mapView: MapView, shadow: Boolean) {
+        if (shadow || !hasGrid) return
 
         val originLat = GridConfig.ORIGIN_LAT
         val originLon = GridConfig.ORIGIN_LON
 
         val metersPerDegLat = 111320.0
-        val metersPerDegLon = 111320.0 * kotlin.math.cos(Math.toRadians(originLat))
+        val metersPerDegLon = 111320.0 * cos(Math.toRadians(originLat))
+        val cellSize = GridConfig.CELL_SIZE_METERS
 
-        val sizeLat = GridConfig.CELL_SIZE_METERS / metersPerDegLat
-        val sizeLon = GridConfig.CELL_SIZE_METERS / metersPerDegLon
+        // sichtbaren Kartenausschnitt in Zellen-Indizes umrechnen
+        val boundingBox = mapView.boundingBox
 
-        for (cell in allCells) {
+        val visibleMinX = floor(((boundingBox.lonWest - originLon) * metersPerDegLon) / cellSize).toInt()
+        val visibleMaxX = ceil(((boundingBox.lonEast - originLon) * metersPerDegLon) / cellSize).toInt()
+        val visibleMinY = floor(((boundingBox.latSouth - originLat) * metersPerDegLat) / cellSize).toInt()
+        val visibleMaxY = ceil(((boundingBox.latNorth - originLat) * metersPerDegLat) / cellSize).toInt()
 
-            val xMeters = cell.x * GridConfig.CELL_SIZE_METERS
-            val yMeters = cell.y * GridConfig.CELL_SIZE_METERS
+        // auf den tatsächlich konfigurierten Umkreis begrenzen
+        val startX = max(minX, visibleMinX)
+        val endX = min(maxX, visibleMaxX)
+        val startY = max(minY, visibleMinY)
+        val endY = min(maxY, visibleMaxY)
 
-            val lat = originLat + (yMeters / metersPerDegLat)
-            val lon = originLon + (xMeters / metersPerDegLon)
+        if (startX > endX || startY > endY) return
 
-            val polygon = Polygon(map)
+        val projection = mapView.projection
+        val sizeLat = cellSize / metersPerDegLat
+        val sizeLon = cellSize / metersPerDegLon
 
-            polygon.points = listOf(
-                GeoPoint(lat, lon),
-                GeoPoint(lat + sizeLat, lon),
-                GeoPoint(lat + sizeLat, lon + sizeLon),
-                GeoPoint(lat, lon + sizeLon)
-            )
+        for (x in startX..endX) {
+            for (y in startY..endY) {
 
-            val isVisited = visited.contains(cell)
+                val lat = originLat + (y * cellSize) / metersPerDegLat
+                val lon = originLon + (x * cellSize) / metersPerDegLon
 
-            if (isVisited) {
-                polygon.fillPaint.color = Color.argb(120, 0, 150, 255)
-            } else {
-                polygon.fillPaint.color = Color.argb(20, 0, 0, 0)
+                val point1 = projection.toPixels(GeoPoint(lat, lon), null)
+                val point2 = projection.toPixels(GeoPoint(lat + sizeLat, lon + sizeLon), null)
+
+                val left = min(point1.x, point2.x).toFloat()
+                val right = max(point1.x, point2.x).toFloat()
+                val top = min(point1.y, point2.y).toFloat()
+                val bottom = max(point1.y, point2.y).toFloat()
+
+                val isVisited = visitedCells.contains(GridCell(x, y))
+                val fillPaint = if (isVisited) visitedPaint else unvisitedPaint
+
+                canvas.drawRect(left, top, right, bottom, fillPaint)
+                canvas.drawRect(left, top, right, bottom, outlinePaint)
             }
-
-            polygon.fillPaint.style = Paint.Style.FILL
-
-            polygon.outlinePaint.color = Color.GRAY
-            polygon.outlinePaint.style = Paint.Style.STROKE
-            polygon.outlinePaint.strokeWidth = 5f
-
-            map.overlays.add(polygon)
-        }
-
-        map.post {
-            map.invalidate()
         }
     }
 }

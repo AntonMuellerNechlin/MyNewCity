@@ -14,17 +14,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="top|start"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Fortschritt"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -32,21 +24,20 @@
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="96dp"
-                android:minHeight="96dp"
-                android:maxHeight="96dp"
+                android:layout_height="32dp"
                 android:max="100"
-                android:progress="0"/>
+                android:progress="0"
+                android:progressDrawable="@drawable/progress_bar_thick"
+                android:indeterminateOnly="false"/>
 
             <TextView
                 android:id="@+id/textProgress"
                 android:layout_width="match_parent"
-                android:layout_height="96dp"
+                android:layout_height="32dp"
                 android:gravity="center"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:text="0%"/>
 
         </FrameLayout>

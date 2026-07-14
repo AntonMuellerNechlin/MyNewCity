@@ -49,4 +49,36 @@ class GridManagerTest {
 
         assertEquals(GridCell(0, -1), cell)
     }
+
+    // Regressionstest: für die Längengrad-Skalierung (Meter pro Grad) muss
+    // immer cos(ORIGIN_LAT) verwendet werden, nicht cos(der aktuellen lat).
+    // GridOverlay zeichnet Zellen ebenfalls mit cos(ORIGIN_LAT) - wird an
+    // dieser Stelle stattdessen die Breite des jeweiligen Standorts benutzt,
+    // driftet die berechnete Zelle bei weit entfernten Standorten (andere
+    // Stadt) um mehrere hundert Meter bis Kilometer gegenüber der Zeichnung.
+    @Test
+    fun toGridCellFarFromOriginUsesOriginLatitudeForScalingTest() {
+        val gridManager = GridManager()
+
+        // München: deutlich südlich und leicht westlich von Berlin
+        val munichLat = 48.1351
+        val munichLon = 11.5820
+
+        val metersPerDegLat = 111320.0
+        val metersPerDegLonAtOrigin =
+            111320.0 * kotlin.math.cos(Math.toRadians(GridConfig.ORIGIN_LAT))
+
+        val expectedX = kotlin.math.floor(
+            ((munichLon - GridConfig.ORIGIN_LON) * metersPerDegLonAtOrigin) /
+                GridConfig.CELL_SIZE_METERS
+        ).toInt()
+        val expectedY = kotlin.math.floor(
+            ((munichLat - GridConfig.ORIGIN_LAT) * metersPerDegLat) /
+                GridConfig.CELL_SIZE_METERS
+        ).toInt()
+
+        val cell = gridManager.toGridCell(munichLat, munichLon)
+
+        assertEquals(GridCell(expectedX, expectedY), cell)
+    }
 }

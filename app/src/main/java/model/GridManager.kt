@@ -7,7 +7,14 @@ class GridManager : GridUpdateProvider, GridDataProvider {
     override fun toGridCell(lat: Double, lon: Double): GridCell {
 
         val metersPerDegLat = 111320.0
-        val metersPerDegLon = 111320.0 * kotlin.math.cos(Math.toRadians(lat))
+
+        // WICHTIG: cos() der festen Ursprungsbreite (nicht der aktuellen
+        // lat) verwenden - GridOverlay.draw() zeichnet die Zellen ebenfalls
+        // mit cos(ORIGIN_LAT). Beide Stellen müssen exakt dieselbe Skala
+        // benutzen, sonst driftet die Meter-pro-Längengrad-Umrechnung mit
+        // wachsender Entfernung vom Ursprung auseinander (Breite UND Länge),
+        // und das Raster verschiebt sich dadurch um mehrere Kilometer.
+        val metersPerDegLon = 111320.0 * kotlin.math.cos(Math.toRadians(GridConfig.ORIGIN_LAT))
 
         val xMeters = (lon - GridConfig.ORIGIN_LON) * metersPerDegLon
         val yMeters = (lat - GridConfig.ORIGIN_LAT) * metersPerDegLat

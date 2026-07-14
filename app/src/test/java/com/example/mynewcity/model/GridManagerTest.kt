@@ -12,7 +12,7 @@ class GridManagerTest {
 
         val grid = gridManager.generateGrid(
             GridConfig.ORIGIN_LAT,
-            GridConfig.ORIGIN_LON, 
+            GridConfig.ORIGIN_LON,
             1
         )
 

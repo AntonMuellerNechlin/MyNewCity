@@ -34,8 +34,7 @@ class MapRendererTest {
             val mapRenderer = MapRenderer(
                 map,
                 OsmMapDataProvider(),
-                GridOverlay(map, GridManager()),
-                LocationOverlay(map)
+                GridOverlay(map, GridManager())
             )
 
             // Zoomstufe muss gesetzt sein, bevor die Projektion sinnvolle

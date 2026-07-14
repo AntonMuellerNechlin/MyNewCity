@@ -6,7 +6,6 @@ import com.example.mynewcity.controller.MainController
 import com.example.mynewcity.location.FakeLocationSource
 import com.example.mynewcity.model.GridManager
 import com.example.mynewcity.view.GridOverlay
-import com.example.mynewcity.view.LocationOverlay
 import com.example.mynewcity.view.MapRenderer
 import com.example.mynewcity.view.OsmMapDataProvider
 import com.example.mynewcity.view.UIManager
@@ -31,13 +30,11 @@ class MainActivity : AppCompatActivity() {
         val gridManager = GridManager()
 
         val gridOverlay = GridOverlay(map, gridManager)
-        val locationOverlay = LocationOverlay(map)
 
         val mapRenderer = MapRenderer(
             map,
             OsmMapDataProvider(),
-            gridOverlay,
-            locationOverlay
+            gridOverlay
         )
 
         mapRenderer.setupMap()

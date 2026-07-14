@@ -3,7 +3,7 @@ package com.example.mynewcity.view
 import com.example.mynewcity.model.GridCell
 
 // stellt dem MainController und dem UIManager die Kartenansicht zur
-// Anzeige und Steuerung bereit (siehe Whitepaper Kapitel 7.2/9.2)
+// Anzeige und Steuerung bereit
 interface MapViewProvider {
 
     fun setupMap()

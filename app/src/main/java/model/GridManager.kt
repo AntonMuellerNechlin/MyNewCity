@@ -8,23 +8,17 @@ class GridManager : GridUpdateProvider, GridDataProvider {
 
         val metersPerDegLat = 111320.0
 
-        // WICHTIG: cos() der festen Ursprungsbreite (nicht der aktuellen
-        // lat) verwenden - GridOverlay.draw() zeichnet die Zellen ebenfalls
-        // mit cos(ORIGIN_LAT). Beide Stellen müssen exakt dieselbe Skala
-        // benutzen, sonst driftet die Meter-pro-Längengrad-Umrechnung mit
-        // wachsender Entfernung vom Ursprung auseinander (Breite UND Länge),
-        // und das Raster verschiebt sich dadurch um mehrere Kilometer.
+        // cos() der festen Ursprungsbreite verwenden, nicht der aktuellen lat -
+        // GridOverlay.draw() zeichnet mit derselben festen Skala. Sonst driftet
+        // die Zelle bei wachsender Entfernung vom Ursprung um mehrere Kilometer.
         val metersPerDegLon = 111320.0 * kotlin.math.cos(Math.toRadians(GridConfig.ORIGIN_LAT))
 
         val xMeters = (lon - GridConfig.ORIGIN_LON) * metersPerDegLon
         val yMeters = (lat - GridConfig.ORIGIN_LAT) * metersPerDegLat
 
-        // floor() statt toInt(): toInt() rundet Richtung Null, nicht ab.
-        // Bei Standorten südlich/westlich des festen Ursprungs (ORIGIN_LAT/LON
-        // liegt in Berlin) sind xMeters/yMeters negativ - dort würde toInt()
-        // die falsche Zelle liefern (eine Position zu weit Richtung Ursprung
-        // verschoben), das Raster würde dann nicht mit dem echten Standort
-        // übereinstimmen.
+        // floor() statt toInt(): toInt() rundet Richtung Null statt ab, das
+        // liefert bei negativen Werten (südlich/westlich des Ursprungs) die
+        // falsche Zelle.
         val x = kotlin.math.floor(xMeters / GridConfig.CELL_SIZE_METERS).toInt()
         val y = kotlin.math.floor(yMeters / GridConfig.CELL_SIZE_METERS).toInt()
 

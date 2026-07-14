@@ -58,9 +58,6 @@ class UIManager(
         buttonCenter.setOnClickListener { onCenterClicked() }
     }
 
-    // Aktivity-Lifecycle wird über den UIManager an die Kartenansicht
-    // weitergegeben, da der UIManager laut Komponentendiagramm für die
-    // Darstellung der Karte (via MapViewProvider) in der UI zuständig ist
     fun onResume() {
         mapViewProvider.resume()
     }

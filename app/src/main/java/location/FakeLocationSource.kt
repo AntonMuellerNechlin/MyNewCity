@@ -9,24 +9,20 @@ class FakeLocationSource : LocationProvider {
 
     private lateinit var callback: (LocationData) -> Unit
 
-    // Startpunkt, per Default Berlin, überschreibbar via setStartPosition()
     private var startLat = 52.5200
     private var startLon = 13.4050
 
-    // aktuelle „Grid-Position“
     private var gridX = 0
     private var gridY = 0
 
-    // Schrittgröße in Grid Zellen
-    private val step = 1
+    private val step = 2
 
-    // künstliche Schrittgröße für Fake-GPS-Bewegung
+    // unabhängig von GridConfig.CELL_SIZE_METERS - nur die künstliche
+    // Schrittgröße der Fake-Bewegung in Grad
     private val cellSize = 0.0001
 
     private val runnable = object : Runnable {
         override fun run() {
-
-            // 👉 Bewegung im Grid
             gridX += step
             gridY += step
 

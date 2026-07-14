@@ -57,7 +57,7 @@ class GridManagerTest {
     // driftet die berechnete Zelle bei weit entfernten Standorten (andere
     // Stadt) um mehrere hundert Meter bis Kilometer gegenüber der Zeichnung.
     @Test
-    fun toGridCellFarFromOriginUsesOriginLatitudeForScalingTest() {
+    fun toGridCellFarFromOriginTest() {
         val gridManager = GridManager()
 
         // München: deutlich südlich und leicht westlich von Berlin

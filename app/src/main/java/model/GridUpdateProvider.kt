@@ -1,8 +1,7 @@
 package com.example.mynewcity.model
 
-// wird vom MainController genutzt, um simulierte Standortdaten an den
-// GridManager zu übergeben und daraus Rasterdaten berechnen/aktualisieren
-// zu lassen (siehe Whitepaper Kapitel 4.2)
+// wird vom MainController genutzt, um Standortdaten an den GridManager
+// zu übergeben und daraus Rasterdaten berechnen/aktualisieren zu lassen
 interface GridUpdateProvider {
 
     fun addLocation(lat: Double, lon: Double): GridCell

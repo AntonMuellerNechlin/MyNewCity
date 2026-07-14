@@ -18,7 +18,7 @@ interface MapViewProvider {
 
     fun initializeGrid(allCells: Set<GridCell>)
 
-    fun updateVisited(visitedCells: Set<GridCell>)
+    fun updateVisited()
 
     fun clearGrid()
 

@@ -6,6 +6,8 @@ interface GridUpdateProvider {
 
     fun addLocation(lat: Double, lon: Double): GridCell
 
+    fun getVisitedCount(): Int
+
     fun toGridCell(lat: Double, lon: Double): GridCell
 
     fun generateGrid(

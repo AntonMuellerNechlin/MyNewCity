@@ -28,7 +28,9 @@ class MainActivity : AppCompatActivity() {
 
         val map: MapView = findViewById(R.id.map)
 
-        val gridOverlay = GridOverlay(map)
+        val gridManager = GridManager()
+
+        val gridOverlay = GridOverlay(map, gridManager)
         val locationOverlay = LocationOverlay(map)
 
         val mapRenderer = MapRenderer(
@@ -39,8 +41,6 @@ class MainActivity : AppCompatActivity() {
         )
 
         mapRenderer.setupMap()
-
-        val gridManager = GridManager()
 
         uiManager = UIManager(
             buttonToggle = findViewById(R.id.buttonToggle),
@@ -63,8 +63,6 @@ class MainActivity : AppCompatActivity() {
         mainController = MainController(
             locationProvider = FakeLocationSource(),
             gridUpdateProvider = gridManager,
-            gridDataProvider = gridManager,
-            mapViewProvider = mapRenderer,
             uiUpdateProvider = uiManager,
             executeOnUiThread = { action ->
                 runOnUiThread(action)

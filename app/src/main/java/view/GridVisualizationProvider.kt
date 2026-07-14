@@ -7,8 +7,9 @@ interface GridVisualizationProvider {
     // legt fest, welcher Bereich (in Zellen) überhaupt zum Raster gehört
     fun initializeGrid(allCells: Set<GridCell>)
 
-    // aktualisiert, welche Zellen besucht sind (nur eine Referenz, kein Neuaufbau)
-    fun updateVisited(visitedCells: Set<GridCell>)
+    // signalisiert, dass sich die besuchten Zellen geändert haben - die
+    // aktuellen Daten werden dabei selbst über GridDataProvider abgeholt
+    fun updateVisited()
 
     // entfernt das Raster komplett (z.B. bei Reset)
     fun clearGrid()

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.example.mynewcity.model.GridCell
 import com.example.mynewcity.model.GridConfig
+import com.example.mynewcity.model.GridDataProvider
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
@@ -18,7 +19,10 @@ import kotlin.math.min
 // Zelle zu verwalten. So werden bei jedem Zeichnen nur die Zellen berechnet,
 // die im aktuellen Kartenausschnitt überhaupt sichtbar sind - unabhängig
 // davon, wie groß der insgesamt eingestellte Umkreis ist.
-class GridOverlay(private val map: MapView) : Overlay(), GridVisualizationProvider {
+class GridOverlay(
+    private val map: MapView,
+    private val gridDataProvider: GridDataProvider
+) : Overlay(), GridVisualizationProvider {
 
     private var visitedCells: Set<GridCell> = emptySet()
     private var hasGrid = false
@@ -58,8 +62,8 @@ class GridOverlay(private val map: MapView) : Overlay(), GridVisualizationProvid
         map.postInvalidate()
     }
 
-    override fun updateVisited(visitedCells: Set<GridCell>) {
-        this.visitedCells = visitedCells
+    override fun updateVisited() {
+        visitedCells = gridDataProvider.getVisitedCells()
         map.postInvalidate()
     }
 

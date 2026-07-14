@@ -27,7 +27,7 @@ class MainActivityEspressoTest {
             .check(matches(isDisplayed()))
     }
 
-    // Whitepaper 9.3 "clickButtonTest": Klick simulieren und prüfen, ob die
+    // "clickButtonTest": Klick simulieren und prüfen, ob die
     // Simulation danach als laufend markiert wird (Start/Stop-Umschaltung)
     @Test
     fun clickButtonTest() {
@@ -44,7 +44,7 @@ class MainActivityEspressoTest {
             .check(matches(withText("Stop")))
     }
 
-    // Whitepaper 9.3 "changeUiStateTest": UI-Zustand nach Aktion prüfen
+    // "changeUiStateTest": UI-Zustand nach Aktion prüfen
     @Test
     fun changeUiStateTest() {
         onView(withId(R.id.progressContainer))

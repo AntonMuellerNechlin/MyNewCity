@@ -35,6 +35,10 @@ class GridManager : GridUpdateProvider, GridDataProvider {
         return visitedCells
     }
 
+    override fun getVisitedCount(): Int {
+        return visitedCells.size
+    }
+
     override fun reset() {
         visitedCells.clear()
     }

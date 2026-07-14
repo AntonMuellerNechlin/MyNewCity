@@ -3,12 +3,13 @@ package com.example.mynewcity.view
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.mynewcity.model.GridManager
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.osmdroid.views.MapView
 
-// Whitepaper 7.3 "centerMapTest": feste Koordinate setzen und prüfen,
+// "centerMapTest": feste Koordinate setzen und prüfen,
 // ob die Kartenansicht danach mittig auf dieser Koordinate steht
 @RunWith(AndroidJUnit4::class)
 class MapRendererTest {
@@ -33,7 +34,7 @@ class MapRendererTest {
             val mapRenderer = MapRenderer(
                 map,
                 OsmMapDataProvider(),
-                GridOverlay(map),
+                GridOverlay(map, GridManager()),
                 LocationOverlay(map)
             )
 

@@ -34,8 +34,8 @@ class MapRenderer(
         gridVisualizationProvider.initializeGrid(allCells)
     }
 
-    override fun updateVisited(visitedCells: Set<GridCell>) {
-        gridVisualizationProvider.updateVisited(visitedCells)
+    override fun updateVisited() {
+        gridVisualizationProvider.updateVisited()
     }
 
     override fun clearGrid() {

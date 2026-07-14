@@ -56,7 +56,8 @@
         android:textColor="@color/white"
         android:textSize="12sp"
         android:elevation="4dp"
-        android:text="Reset"/>
+        android:text="Reset"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/buttonToggle"

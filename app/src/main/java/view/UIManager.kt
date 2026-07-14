@@ -9,10 +9,11 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.example.mynewcity.R
+import com.example.mynewcity.model.GridCell
 
 class UIManager(
     private val buttonToggle: Button,
-    buttonReset: Button,
+    private val buttonReset: Button,
     buttonCenter: ImageButton,
     private val progressContainer: View,
     private val progressBar: ProgressBar,
@@ -35,6 +36,7 @@ class UIManager(
                 needsRadiusPrompt -> showRadiusDialog { radiusKm ->
                     needsRadiusPrompt = false
                     progressContainer.visibility = View.VISIBLE
+                    buttonReset.visibility = View.VISIBLE
                     onRadiusConfirmed(radiusKm)
                 }
                 else -> onStartClicked()
@@ -49,6 +51,7 @@ class UIManager(
                     .setPositiveButton("Ja") { _, _ ->
                         needsRadiusPrompt = true
                         progressContainer.visibility = View.GONE
+                        buttonReset.visibility = View.GONE
                         onResetClicked()
                     }
                     .setNegativeButton("Nein", null)
@@ -130,6 +133,36 @@ class UIManager(
     override fun updateProgress(percent: Int) {
         progressBar.progress = percent
         textProgress.text = "$percent%"
+    }
+
+    // reine Weiterleitung an MapRenderer - MainController kennt MapViewProvider
+    // laut Komponentendiagramm nicht direkt, sondern nur über UIUpdateProvider
+    override fun getMapCenter(): Pair<Double, Double> {
+        return mapViewProvider.getMapCenter()
+    }
+
+    override fun centerOn(lat: Double, lon: Double) {
+        mapViewProvider.centerOn(lat, lon)
+    }
+
+    override fun initializeGrid(allCells: Set<GridCell>) {
+        mapViewProvider.initializeGrid(allCells)
+    }
+
+    override fun updateVisited() {
+        mapViewProvider.updateVisited()
+    }
+
+    override fun clearGrid() {
+        mapViewProvider.clearGrid()
+    }
+
+    override fun updateLocationMarker(lat: Double, lon: Double) {
+        mapViewProvider.updateLocationMarker(lat, lon)
+    }
+
+    override fun clearLocationMarker() {
+        mapViewProvider.clearLocationMarker()
     }
 
     companion object {

@@ -5,16 +5,12 @@ import com.example.mynewcity.location.LocationData
 import com.example.mynewcity.location.LocationProvider
 import com.example.mynewcity.model.GridCell
 import com.example.mynewcity.model.GridConfig
-import com.example.mynewcity.model.GridDataProvider
 import com.example.mynewcity.model.GridUpdateProvider
-import com.example.mynewcity.view.MapViewProvider
 import com.example.mynewcity.view.UIUpdateProvider
 
 class MainController(
     private val locationProvider: LocationProvider,
     private val gridUpdateProvider: GridUpdateProvider,
-    private val gridDataProvider: GridDataProvider,
-    private val mapViewProvider: MapViewProvider,
     private val uiUpdateProvider: UIUpdateProvider,
     private val executeOnUiThread: (() -> Unit) -> Unit
 ) {
@@ -25,30 +21,38 @@ class MainController(
     private var radiusCells = 20
     private var totalCellCount = 1
     private var allCells: Set<GridCell> = emptySet()
+    private var isInitialized = false
 
     fun setRadius(radiusKm: Double) {
         radiusCells = GridConfig.radiusCellsFromKm(radiusKm)
     }
 
     fun startTracking() {
-        val (mapLat, mapLon) = mapViewProvider.getMapCenter()
-        trackingOriginLat = mapLat
-        trackingOriginLon = mapLon
 
-        locationProvider.setStartPosition(mapLat, mapLon)
-        uiUpdateProvider.updateTrackingState(true)
+        // Ursprung und Raster nur beim allerersten Start (bzw. nach einem Reset)
+        // festlegen - ein Stop/Start-Zyklus setzt die Simulation sonst am selben
+        // Ursprung mit demselben Raster fort, statt neu zu beginnen
+        if (!isInitialized) {
+            val (mapLat, mapLon) = uiUpdateProvider.getMapCenter()
+            trackingOriginLat = mapLat
+            trackingOriginLon = mapLon
 
-        // Raster nur EINMAL pro Start aufbauen, nicht bei jedem GPS-Tick
-        allCells = gridUpdateProvider.generateGrid(
-            trackingOriginLat,
-            trackingOriginLon,
-            radiusCells
-        )
-        totalCellCount = allCells.size
+            locationProvider.setStartPosition(mapLat, mapLon)
 
-        executeOnUiThread {
-            mapViewProvider.initializeGrid(allCells)
+            allCells = gridUpdateProvider.generateGrid(
+                trackingOriginLat,
+                trackingOriginLon,
+                radiusCells
+            )
+            totalCellCount = allCells.size
+            isInitialized = true
+
+            executeOnUiThread {
+                uiUpdateProvider.initializeGrid(allCells)
+            }
         }
+
+        uiUpdateProvider.updateTrackingState(true)
 
         locationProvider.start { location ->
 
@@ -74,14 +78,14 @@ class MainController(
                 "GRID: cell=${cell.x}, ${cell.y}, insideGrid=$isInsideGrid"
             )
 
-            val visitedCount = gridDataProvider.getVisitedCells().size
+            val visitedCount = gridUpdateProvider.getVisitedCount()
             val progressPercent = (visitedCount * 100) / totalCellCount
 
             executeOnUiThread {
-                mapViewProvider.updateLocationMarker(location.latitude, location.longitude)
+                uiUpdateProvider.updateLocationMarker(location.latitude, location.longitude)
 
                 if (isInsideGrid) {
-                    mapViewProvider.updateVisited(gridDataProvider.getVisitedCells())
+                    uiUpdateProvider.updateVisited()
                     uiUpdateProvider.updateVisitedCells(visitedCount)
                     uiUpdateProvider.updateProgress(progressPercent)
                 }
@@ -97,13 +101,14 @@ class MainController(
     fun resetTracking() {
         locationProvider.stop()
         gridUpdateProvider.reset()
+        isInitialized = false
         totalCellCount = 1
         allCells = emptySet()
         lastLocation = null
 
         executeOnUiThread {
-            mapViewProvider.clearGrid()
-            mapViewProvider.clearLocationMarker()
+            uiUpdateProvider.clearGrid()
+            uiUpdateProvider.clearLocationMarker()
             uiUpdateProvider.updateTrackingState(false)
             uiUpdateProvider.updateVisitedCells(0)
             uiUpdateProvider.updateProgress(0)
@@ -114,7 +119,7 @@ class MainController(
         val location = lastLocation ?: return
 
         executeOnUiThread {
-            mapViewProvider.centerOn(location.latitude, location.longitude)
+            uiUpdateProvider.centerOn(location.latitude, location.longitude)
         }
     }
 }

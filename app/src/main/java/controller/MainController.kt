@@ -5,14 +5,16 @@ import com.example.mynewcity.location.LocationData
 import com.example.mynewcity.location.LocationProvider
 import com.example.mynewcity.model.GridCell
 import com.example.mynewcity.model.GridConfig
-import com.example.mynewcity.model.GridManager
-import com.example.mynewcity.view.MapRenderer
+import com.example.mynewcity.model.GridDataProvider
+import com.example.mynewcity.model.GridUpdateProvider
+import com.example.mynewcity.view.MapViewProvider
 import com.example.mynewcity.view.UIUpdateProvider
 
 class MainController(
     private val locationProvider: LocationProvider,
-    private val gridManager: GridManager,
-    private val mapRenderer: MapRenderer,
+    private val gridUpdateProvider: GridUpdateProvider,
+    private val gridDataProvider: GridDataProvider,
+    private val mapViewProvider: MapViewProvider,
     private val uiUpdateProvider: UIUpdateProvider,
     private val executeOnUiThread: (() -> Unit) -> Unit
 ) {
@@ -29,7 +31,7 @@ class MainController(
     }
 
     fun startTracking() {
-        val (mapLat, mapLon) = mapRenderer.getMapCenter()
+        val (mapLat, mapLon) = mapViewProvider.getMapCenter()
         trackingOriginLat = mapLat
         trackingOriginLon = mapLon
 
@@ -37,7 +39,7 @@ class MainController(
         uiUpdateProvider.updateTrackingState(true)
 
         // Raster nur EINMAL pro Start aufbauen, nicht bei jedem GPS-Tick
-        allCells = gridManager.generateGrid(
+        allCells = gridUpdateProvider.generateGrid(
             trackingOriginLat,
             trackingOriginLon,
             radiusCells
@@ -45,7 +47,7 @@ class MainController(
         totalCellCount = allCells.size
 
         executeOnUiThread {
-            mapRenderer.initializeGrid(allCells)
+            mapViewProvider.initializeGrid(allCells)
         }
 
         locationProvider.start { location ->
@@ -57,14 +59,14 @@ class MainController(
                 "FakeGPS: ${location.latitude}, ${location.longitude}"
             )
 
-            val cell = gridManager.toGridCell(location.latitude, location.longitude)
+            val cell = gridUpdateProvider.toGridCell(location.latitude, location.longitude)
 
             // nur zählen, wenn die Position auch tatsächlich im Raster liegt -
             // sonst würde der Fortschritt auch außerhalb des Umkreises steigen
             val isInsideGrid = allCells.contains(cell)
 
             if (isInsideGrid) {
-                gridManager.addLocation(location.latitude, location.longitude)
+                gridUpdateProvider.addLocation(location.latitude, location.longitude)
             }
 
             Log.d(
@@ -72,14 +74,14 @@ class MainController(
                 "GRID: cell=${cell.x}, ${cell.y}, insideGrid=$isInsideGrid"
             )
 
-            val visitedCount = gridManager.getVisitedCells().size
+            val visitedCount = gridDataProvider.getVisitedCells().size
             val progressPercent = (visitedCount * 100) / totalCellCount
 
             executeOnUiThread {
-                mapRenderer.updateLocationMarker(location.latitude, location.longitude)
+                mapViewProvider.updateLocationMarker(location.latitude, location.longitude)
 
                 if (isInsideGrid) {
-                    mapRenderer.updateVisited(gridManager.getVisitedCells())
+                    mapViewProvider.updateVisited(gridDataProvider.getVisitedCells())
                     uiUpdateProvider.updateVisitedCells(visitedCount)
                     uiUpdateProvider.updateProgress(progressPercent)
                 }
@@ -94,14 +96,14 @@ class MainController(
 
     fun resetTracking() {
         locationProvider.stop()
-        gridManager.reset()
+        gridUpdateProvider.reset()
         totalCellCount = 1
         allCells = emptySet()
         lastLocation = null
 
         executeOnUiThread {
-            mapRenderer.clearGrid()
-            mapRenderer.clearLocationMarker()
+            mapViewProvider.clearGrid()
+            mapViewProvider.clearLocationMarker()
             uiUpdateProvider.updateTrackingState(false)
             uiUpdateProvider.updateVisitedCells(0)
             uiUpdateProvider.updateProgress(0)
@@ -112,7 +114,7 @@ class MainController(
         val location = lastLocation ?: return
 
         executeOnUiThread {
-            mapRenderer.centerOn(location.latitude, location.longitude)
+            mapViewProvider.centerOn(location.latitude, location.longitude)
         }
     }
 }

@@ -7,13 +7,13 @@ import org.osmdroid.views.MapView
 
 class MapRenderer(
     private val map: MapView,
-    private val gridOverlay: GridOverlay,
+    private val mapDataProvider: MapDataProvider,
+    private val gridVisualizationProvider: GridVisualizationProvider,
     private val locationOverlay: LocationOverlay
 ) : MapViewProvider {
 
     override fun setupMap() {
-        map.setMultiTouchControls(true)
-        map.controller.setZoom(18.0)
+        mapDataProvider.configureMap(map)
         centerMap()
     }
 
@@ -21,32 +21,32 @@ class MapRenderer(
         centerOn(GridConfig.ORIGIN_LAT, GridConfig.ORIGIN_LON)
     }
 
-    fun centerOn(lat: Double, lon: Double) {
+    override fun centerOn(lat: Double, lon: Double) {
         map.controller.setCenter(GeoPoint(lat, lon))
     }
 
-    fun getMapCenter(): Pair<Double, Double> {
+    override fun getMapCenter(): Pair<Double, Double> {
         val center = map.mapCenter
         return center.latitude to center.longitude
     }
 
-    fun initializeGrid(allCells: Set<GridCell>) {
-        gridOverlay.initializeGrid(allCells)
+    override fun initializeGrid(allCells: Set<GridCell>) {
+        gridVisualizationProvider.initializeGrid(allCells)
     }
 
-    fun updateVisited(visitedCells: Set<GridCell>) {
-        gridOverlay.updateVisited(visitedCells)
+    override fun updateVisited(visitedCells: Set<GridCell>) {
+        gridVisualizationProvider.updateVisited(visitedCells)
     }
 
-    fun clearGrid() {
-        gridOverlay.clearGrid()
+    override fun clearGrid() {
+        gridVisualizationProvider.clearGrid()
     }
 
-    fun updateLocationMarker(lat: Double, lon: Double) {
+    override fun updateLocationMarker(lat: Double, lon: Double) {
         locationOverlay.updateLocation(lat, lon)
     }
 
-    fun clearLocationMarker() {
+    override fun clearLocationMarker() {
         locationOverlay.clearLocation()
     }
 

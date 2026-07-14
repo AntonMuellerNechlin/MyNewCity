@@ -17,6 +17,7 @@ class UIManager(
     private val progressContainer: View,
     private val progressBar: ProgressBar,
     private val textProgress: TextView,
+    private val mapViewProvider: MapViewProvider,
     onStartClicked: () -> Unit,
     onStopClicked: () -> Unit,
     onResetClicked: () -> Unit,
@@ -55,6 +56,17 @@ class UIManager(
         }
 
         buttonCenter.setOnClickListener { onCenterClicked() }
+    }
+
+    // Aktivity-Lifecycle wird über den UIManager an die Kartenansicht
+    // weitergegeben, da der UIManager laut Komponentendiagramm für die
+    // Darstellung der Karte (via MapViewProvider) in der UI zuständig ist
+    fun onResume() {
+        mapViewProvider.resume()
+    }
+
+    fun onPause() {
+        mapViewProvider.pause()
     }
 
     private fun showRadiusDialog(onConfirmed: (Double) -> Unit) {

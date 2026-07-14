@@ -4,7 +4,7 @@ class GridManager : GridUpdateProvider, GridDataProvider {
 
     private val visitedCells = mutableSetOf<GridCell>()
 
-    fun toGridCell(lat: Double, lon: Double): GridCell {
+    override fun toGridCell(lat: Double, lon: Double): GridCell {
 
         val metersPerDegLat = 111320.0
         val metersPerDegLon = 111320.0 * kotlin.math.cos(Math.toRadians(lat))
@@ -28,7 +28,7 @@ class GridManager : GridUpdateProvider, GridDataProvider {
         return visitedCells
     }
 
-    fun reset() {
+    override fun reset() {
         visitedCells.clear()
     }
 

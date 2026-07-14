@@ -1,6 +1,19 @@
 package com.example.mynewcity.model
 
+// wird vom MainController genutzt, um simulierte Standortdaten an den
+// GridManager zu übergeben und daraus Rasterdaten berechnen/aktualisieren
+// zu lassen (siehe Whitepaper Kapitel 4.2)
 interface GridUpdateProvider {
 
     fun addLocation(lat: Double, lon: Double): GridCell
+
+    fun toGridCell(lat: Double, lon: Double): GridCell
+
+    fun generateGrid(
+        centerLat: Double,
+        centerLon: Double,
+        radius: Int
+    ): Set<GridCell>
+
+    fun reset()
 }

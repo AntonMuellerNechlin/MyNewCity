@@ -12,8 +12,14 @@ class GridManager : GridUpdateProvider, GridDataProvider {
         val xMeters = (lon - GridConfig.ORIGIN_LON) * metersPerDegLon
         val yMeters = (lat - GridConfig.ORIGIN_LAT) * metersPerDegLat
 
-        val x = (xMeters / GridConfig.CELL_SIZE_METERS).toInt()
-        val y = (yMeters / GridConfig.CELL_SIZE_METERS).toInt()
+        // floor() statt toInt(): toInt() rundet Richtung Null, nicht ab.
+        // Bei Standorten südlich/westlich des festen Ursprungs (ORIGIN_LAT/LON
+        // liegt in Berlin) sind xMeters/yMeters negativ - dort würde toInt()
+        // die falsche Zelle liefern (eine Position zu weit Richtung Ursprung
+        // verschoben), das Raster würde dann nicht mit dem echten Standort
+        // übereinstimmen.
+        val x = kotlin.math.floor(xMeters / GridConfig.CELL_SIZE_METERS).toInt()
+        val y = kotlin.math.floor(yMeters / GridConfig.CELL_SIZE_METERS).toInt()
 
         return GridCell(x, y)
     }

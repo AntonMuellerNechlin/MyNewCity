@@ -33,4 +33,20 @@ class GridManagerTest {
 
         assertEquals(GridCell(0, 0), cell)
     }
+
+    // Regressionstest: südlich/westlich des festen Ursprungs sind die
+    // Meter-Offsets negativ. toGridCell() muss dabei abrunden (floor),
+    // nicht Richtung Null abschneiden - sonst landet der Standort optisch
+    // eine Zelle über dem tatsächlich markierten Kästchen.
+    @Test
+    fun toGridCellSouthOfOriginTest() {
+        val gridManager = GridManager()
+
+        val metersPerDegLat = 111320.0
+        val latSlightlySouth = GridConfig.ORIGIN_LAT - (50.0 / metersPerDegLat)
+
+        val cell = gridManager.toGridCell(latSlightlySouth, GridConfig.ORIGIN_LON)
+
+        assertEquals(GridCell(0, -1), cell)
+    }
 }
